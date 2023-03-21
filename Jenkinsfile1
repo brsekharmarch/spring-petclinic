@@ -1,0 +1,27 @@
+pipeline {
+    agent { label 'AVEN_JDK8' }
+    stages {
+        stage('vcs') {
+            steps {
+                git url: 'https://github.com/brsekharmarch/spring-petclinic.git',
+                branch: 'declarative'
+            }
+        }
+        stage('package') {
+            steps {
+                sh 'mvn package'
+            }
+        }
+        stage('archiveartifacts') {
+            steps {
+                archiveArtifacts onlyIfSuccessful: true 
+                artifacts: '**/target/springpet-clinic-3.0.0-SNAPSHOT.jar'
+            }
+        }
+        stage('junit test') {
+            steps {
+               junit testResults: 'java -jar target/*.jar'
+            }
+        }
+    }
+}
